@@ -1,0 +1,51 @@
+name: Publish
+
+on:
+  push:
+    tags:
+      - '*'
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.x'
+
+      - name: Extract version from tag
+        id: version
+        run: echo "version=${GITHUB_REF_NAME}" >> $GITHUB_OUTPUT
+
+      - name: Build
+        run: >
+          dotnet build
+          --configuration Release
+          -p:Version=${{ steps.version.outputs.version }}
+
+      - name: Test
+        run: >
+          dotnet test
+          --configuration Release
+          --no-build
+
+      - name: Pack
+        run: >
+          dotnet pack
+          --configuration Release
+          --no-build
+          -p:Version=${{ steps.version.outputs.version }}
+          --output ./artifacts
+
+      - name: Publish to NuGet
+        run: >
+          dotnet nuget push ./artifacts/*.nupkg
+          --api-key ${{ secrets.NUGET_API_KEY }}
+          --source https://api.nuget.org/v3/index.json
+          --skip-duplicate

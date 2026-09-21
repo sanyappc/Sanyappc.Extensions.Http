@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="Sanyappc.Extensions.Http.Tests/Sanyappc.Extensions.Http.Tests.csproj" />
+  <Project Path="Sanyappc.Extensions.Http/Sanyappc.Extensions.Http.csproj" />
+</Solution>

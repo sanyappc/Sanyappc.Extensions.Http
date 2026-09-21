@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <Authors>Alexander Mokrov</Authors>
+    <Copyright>Copyright (c) 2026 Alexander Mokrov</Copyright>
+    <Description>HttpClient extensions for .NET. Adds the response-body idle timeout that .NET does not have: a delegating handler that fails a body read once it goes silent for a configured time, without ever cutting a slow transfer that keeps producing data. Works with buffered sends, GetFromJsonAsync and streamed reads, composes with IHttpClientFactory and resilience handlers, and never leaks query strings into error messages.</Description>
+    <PackageTags>http httpclient timeout idle-timeout read-timeout response-body delegatinghandler ihttpclientfactory resilience dotnet extensions</PackageTags>
+    <PackageProjectUrl>https://github.com/sanyappc/Sanyappc.Extensions.Http</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/sanyappc/Sanyappc.Extensions.Http</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.*" />
+  </ItemGroup>
+
+</Project>
