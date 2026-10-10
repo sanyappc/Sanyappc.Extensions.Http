@@ -52,7 +52,7 @@ The timer is re-armed before every read of the response body, so it bounds **sil
 | Response body | Result |
 |---|---|
 | Arrives at any speed with gaps shorter than the timeout | Read to the end, however long it takes |
-| Goes silent for longer than the timeout | The read throws `TimeoutException` |
+| Goes silent for longer than the timeout | The read throws `ResponseIdleTimeoutException`, a `TimeoutException` |
 | Read is cancelled by the caller's token | `OperationCanceledException`, as without the handler |
 
 It applies the same way to buffered sends (`GetAsync`, `PostAsync`, `SendAsync` with the default completion option), to `GetFromJsonAsync` and `ReadFromJsonAsync`, and to streams returned by `ReadAsStreamAsync`. Response headers, including `Content-Length` and `Content-Type`, are preserved.
@@ -61,7 +61,7 @@ Bounding the time to the response headers stays the job of `HttpClient.Timeout` 
 
 ## Error handling
 
-A silent body surfaces as a `TimeoutException`:
+A silent body surfaces as a `ResponseIdleTimeoutException`, which is a `TimeoutException`:
 
 ```
 The response body of GET https://api.example.com/v1/items went silent for 00:00:30.
@@ -74,9 +74,9 @@ try
 {
     Item[]? items = await client.GetFromJsonAsync<Item[]>("v1/items", cancellationToken);
 }
-catch (TimeoutException)
+catch (ResponseIdleTimeoutException)
 {
-    // the peer stopped sending in the middle of the body
+    // the peer stopped sending in the middle of the body; a plain TimeoutException catch sees it too
 }
 ```
 

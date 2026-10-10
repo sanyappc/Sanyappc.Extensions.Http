@@ -87,7 +87,7 @@ public sealed class ResponseIdleTimeoutTests : IAsyncDisposable
         HttpClient client = BoundedClient();
         Uri url = UrlServing(StartABodyThenGoSilent);
 
-        await Assert.ThrowsAsync<TimeoutException>(
+        await Assert.ThrowsAsync<ResponseIdleTimeoutException>(
             () => client.GetFromJsonAsync<List<Dictionary<string, int>>>(url, TestContext.Current.CancellationToken));
     }
 
@@ -97,7 +97,7 @@ public sealed class ResponseIdleTimeoutTests : IAsyncDisposable
         HttpClient client = BoundedClient();
         Uri url = UrlServing(StartABodyThenGoSilent);
 
-        await Assert.ThrowsAsync<TimeoutException>(() => client.GetAsync(url, TestContext.Current.CancellationToken));
+        await Assert.ThrowsAsync<ResponseIdleTimeoutException>(() => client.GetAsync(url, TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -110,7 +110,7 @@ public sealed class ResponseIdleTimeoutTests : IAsyncDisposable
         using HttpResponseMessage response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
         await using Stream body = await response.Content.ReadAsStreamAsync(cancellationToken);
 
-        await Assert.ThrowsAsync<TimeoutException>(() => ReadToEndAsync(body, cancellationToken));
+        await Assert.ThrowsAsync<ResponseIdleTimeoutException>(() => ReadToEndAsync(body, cancellationToken));
     }
 
     [Fact]
@@ -123,10 +123,11 @@ public sealed class ResponseIdleTimeoutTests : IAsyncDisposable
         using HttpResponseMessage response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
         await using Stream body = await response.Content.ReadAsStreamAsync(cancellationToken);
 
-        TimeoutException failure = await Assert.ThrowsAsync<TimeoutException>(() => ReadToEndAsync(body, cancellationToken));
+        ResponseIdleTimeoutException failure = await Assert.ThrowsAsync<ResponseIdleTimeoutException>(() => ReadToEndAsync(body, cancellationToken));
 
         Assert.Contains($"GET http://127.0.0.1:{url.Port}/items went silent", failure.Message);
         Assert.DoesNotContain("secret", failure.Message);
+        Assert.IsAssignableFrom<TimeoutException>(failure);
     }
 
     [Fact]
@@ -173,7 +174,7 @@ public sealed class ResponseIdleTimeoutTests : IAsyncDisposable
         Uri url = UrlServing(StartABodyThenGoSilent);
 
         Assert.Equal(Timeout.InfiniteTimeSpan, client.Timeout);
-        await Assert.ThrowsAsync<TimeoutException>(
+        await Assert.ThrowsAsync<ResponseIdleTimeoutException>(
             () => client.GetFromJsonAsync<List<Dictionary<string, int>>>(url, TestContext.Current.CancellationToken));
     }
 
@@ -185,7 +186,7 @@ public sealed class ResponseIdleTimeoutTests : IAsyncDisposable
         using HttpClient client = new(handler);
         Uri url = UrlServing(StartABodyThenGoSilent);
 
-        await Assert.ThrowsAsync<TimeoutException>(() => client.GetAsync(url, TestContext.Current.CancellationToken));
+        await Assert.ThrowsAsync<ResponseIdleTimeoutException>(() => client.GetAsync(url, TestContext.Current.CancellationToken));
     }
 
     [Theory]

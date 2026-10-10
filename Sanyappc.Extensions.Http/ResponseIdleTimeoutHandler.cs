@@ -14,9 +14,9 @@ namespace Sanyappc.Extensions.Http;
 /// </para>
 /// <para>
 /// The timer is re-armed before every read, so it bounds silence and never the length of a transfer: a slow response
-/// that keeps producing data is not cut. When the body does go silent, the read throws a <see cref="TimeoutException"/>
-/// naming the request method, scheme, host and path. The query string and user information are never included, because
-/// they often carry credentials.
+/// that keeps producing data is not cut. When the body does go silent, the read throws a
+/// <see cref="ResponseIdleTimeoutException"/> (a <see cref="TimeoutException"/>) naming the request method, scheme, host
+/// and path. The query string and user information are never included, because they often carry credentials.
 /// </para>
 /// <para>Synchronous reads are passed through unbounded, because an idle timer needs a cancellable read.</para>
 /// </remarks>
@@ -161,7 +161,7 @@ public sealed class ResponseIdleTimeoutHandler : DelegatingHandler
             }
             catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
             {
-                throw new TimeoutException($"The response body of {request} went silent for {idleTimeout}.");
+                throw new ResponseIdleTimeoutException($"The response body of {request} went silent for {idleTimeout}.");
             }
         }
 
