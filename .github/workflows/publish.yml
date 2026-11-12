@@ -12,6 +12,10 @@ jobs:
   publish:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: read
+      id-token: write  # OIDC token for NuGet trusted publishing
+
     steps:
       - uses: actions/checkout@v4
 
@@ -45,9 +49,15 @@ jobs:
           -p:Version=${{ steps.version.outputs.version }}
           --output ./artifacts
 
+      - name: NuGet login
+        id: nuget-login
+        uses: NuGet/login@v1
+        with:
+          user: sanyappc
+
       - name: Publish to NuGet
         run: >
           dotnet nuget push ./artifacts/*.nupkg
-          --api-key ${{ secrets.NUGET_API_KEY }}
+          --api-key ${{ steps.nuget-login.outputs.NUGET_API_KEY }}
           --source https://api.nuget.org/v3/index.json
           --skip-duplicate
