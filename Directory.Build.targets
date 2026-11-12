@@ -1,0 +1,20 @@
+<Project>
+
+  <!--
+    Each target framework references the Microsoft.Extensions.* band it ships with,
+    so net10.0 consumers stay on the LTS packages and net11.0 consumers get the 11.x ones.
+    RuntimeExtensionsVersion: packages from dotnet/runtime (patch-only within a band).
+    DotNetExtensionsVersion: packages from dotnet/extensions (minor releases within a band).
+  -->
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net10.0'">
+    <RuntimeExtensionsVersion>10.0.*</RuntimeExtensionsVersion>
+    <DotNetExtensionsVersion>10.*</DotNetExtensionsVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net11.0'">
+    <RuntimeExtensionsVersion>11.0.*</RuntimeExtensionsVersion>
+    <DotNetExtensionsVersion>11.*</DotNetExtensionsVersion>
+  </PropertyGroup>
+
+</Project>
